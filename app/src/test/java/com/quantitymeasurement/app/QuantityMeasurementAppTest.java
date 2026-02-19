@@ -1,142 +1,114 @@
 package com.quantitymeasurement.app;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import static com.quantitymeasurement.app.QuantityMeasurementApp.Feet;
-import static com.quantitymeasurement.app.QuantityMeasurementApp.Inches;
+import com.quantitymeasurement.app.Length.Unit;
 
 public class QuantityMeasurementAppTest {
 
-    QuantityMeasurementApp qm = new QuantityMeasurementApp();
-
     /* =========================
-       UC1 – FEET TEST CASES
+       SAME UNIT TESTS
        ========================= */
 
     @Test
-    void givenSameFeetValue_shouldReturnTrue() {
-        Feet f1 = new Feet(1.0);
-        Feet f2 = new Feet(1.0);
-        assertTrue(f1.equals(f2));
+    void givenSameFeetValues_shouldReturnTrue() {
+        Length l1 = new Length(1, Unit.FEET);
+        Length l2 = new Length(1, Unit.FEET);
+
+        assertTrue(l1.equals(l2));
+    }
+
+    @Test
+    void givenSameInchValues_shouldReturnTrue() {
+        Length l1 = new Length(12, Unit.INCHES);
+        Length l2 = new Length(12, Unit.INCHES);
+
+        assertTrue(l1.equals(l2));
     }
 
     @Test
     void givenDifferentFeetValues_shouldReturnFalse() {
-        Feet f1 = new Feet(1.0);
-        Feet f2 = new Feet(2.0);
-        assertFalse(f1.equals(f2));
-    }
+        Length l1 = new Length(1, Unit.FEET);
+        Length l2 = new Length(2, Unit.FEET);
 
-    @Test
-    void givenSameReference_shouldReturnTrue() {
-        Feet f1 = new Feet(1.0);
-        assertTrue(f1.equals(f1));
-    }
-
-    @Test
-    void givenFeetAndNull_shouldReturnFalse() {
-        Feet f1 = new Feet(1.0);
-        assertFalse(f1.equals(null));
-    }
-
-    @Test
-    void givenFeetAndDifferentType_shouldReturnFalse() {
-        Feet f1 = new Feet(1.0);
-        assertFalse(f1.equals("1.0"));
-    }
-
-    @Test
-    void givenTwoDifferentObjectsWithSameValue_shouldReturnTrue() {
-        Feet f1 = new Feet(5.0);
-        Feet f2 = new Feet(5.0);
-        assertTrue(f1.equals(f2));
-    }
-
-    @Test
-    void givenDecimalFeetValues_shouldReturnTrue() {
-        Feet f1 = new Feet(2.5);
-        Feet f2 = new Feet(2.5);
-        assertTrue(f1.equals(f2));
-    }
-
-    @Test
-    void givenNegativeFeetValues_shouldReturnTrue() {
-        Feet f1 = new Feet(-3.0);
-        Feet f2 = new Feet(-3.0);
-        assertTrue(f1.equals(f2));
-    }
-
-    @Test
-    void givenZeroFeetValues_shouldReturnTrue() {
-        Feet f1 = new Feet(0.0);
-        Feet f2 = new Feet(0.0);
-        assertTrue(f1.equals(f2));
+        assertFalse(l1.equals(l2));
     }
 
     /* =========================
-       UC2 – INCHES TEST CASES
+       CROSS UNIT TESTS
        ========================= */
 
     @Test
-    void givenSameInchValue_shouldReturnTrue() {
-        Inches i1 = new Inches(5.0);
-        Inches i2 = new Inches(5.0);
-        assertTrue(i1.equals(i2));
+    void givenOneFootAndTwelveInches_shouldReturnTrue() {
+        Length l1 = new Length(1, Unit.FEET);
+        Length l2 = new Length(12, Unit.INCHES);
+
+        assertTrue(l1.equals(l2));
     }
 
     @Test
-    void givenDifferentInchValues_shouldReturnFalse() {
-        Inches i1 = new Inches(5.0);
-        Inches i2 = new Inches(7.0);
-        assertFalse(i1.equals(i2));
+    void givenTwoFeetAndTwentyFourInches_shouldReturnTrue() {
+        Length l1 = new Length(2, Unit.FEET);
+        Length l2 = new Length(24, Unit.INCHES);
+
+        assertTrue(l1.equals(l2));
     }
 
     @Test
-    void givenSameInchReference_shouldReturnTrue() {
-        Inches i1 = new Inches(10.0);
-        assertTrue(i1.equals(i1));
+    void givenOneFootAndTenInches_shouldReturnFalse() {
+        Length l1 = new Length(1, Unit.FEET);
+        Length l2 = new Length(10, Unit.INCHES);
+
+        assertFalse(l1.equals(l2));
     }
 
     @Test
-    void givenInchAndNull_shouldReturnFalse() {
-        Inches i1 = new Inches(10.0);
-        assertFalse(i1.equals(null));
+    void givenSymmetricComparison_shouldReturnTrue() {
+        Length l1 = new Length(12, Unit.INCHES);
+        Length l2 = new Length(1, Unit.FEET);
+
+        assertTrue(l1.equals(l2));
+    }
+
+    /* =========================
+       EQUALS CONTRACT TESTS
+       ========================= */
+
+    @Test
+    void givenSameReference_shouldReturnTrue() {
+        Length l1 = new Length(1, Unit.FEET);
+        assertTrue(l1.equals(l1));
     }
 
     @Test
-    void givenInchAndDifferentType_shouldReturnFalse() {
-        Inches i1 = new Inches(10.0);
-        assertFalse(i1.equals(10.0));
+    void givenNullComparison_shouldReturnFalse() {
+        Length l1 = new Length(1, Unit.FEET);
+        assertFalse(l1.equals(null));
     }
 
     @Test
-    void givenTwoDifferentInchObjectsWithSameValue_shouldReturnTrue() {
-        Inches i1 = new Inches(8.0);
-        Inches i2 = new Inches(8.0);
-        assertTrue(i1.equals(i2));
+    void givenDifferentObjectType_shouldReturnFalse() {
+        Length l1 = new Length(1, Unit.FEET);
+        assertFalse(l1.equals("1"));
+    }
+
+    /* =========================
+       STATIC METHOD TEST
+       ========================= */
+
+    @Test
+    void givenCompareMethod_shouldReturnTrue() {
+        assertTrue(
+            QuantityMeasurementApp.compare(1, Unit.FEET, 12, Unit.INCHES)
+        );
     }
 
     @Test
-    void givenDecimalInchValues_shouldReturnTrue() {
-        Inches i1 = new Inches(2.25);
-        Inches i2 = new Inches(2.25);
-        assertTrue(i1.equals(i2));
-    }
-
-    @Test
-    void givenNegativeInchValues_shouldReturnTrue() {
-        Inches i1 = new Inches(-4.0);
-        Inches i2 = new Inches(-4.0);
-        assertTrue(i1.equals(i2));
-    }
-
-    @Test
-    void givenZeroInchValues_shouldReturnTrue() {
-        Inches i1 = new Inches(0.0);
-        Inches i2 = new Inches(0.0);
-        assertTrue(i1.equals(i2));
+    void givenCompareMethodWithInvalidValues_shouldReturnFalse() {
+        assertFalse(
+            QuantityMeasurementApp.compare(1, Unit.FEET, 10, Unit.INCHES)
+        );
     }
 }

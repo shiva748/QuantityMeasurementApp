@@ -1,69 +1,21 @@
 package com.quantitymeasurement.app;
 
 public class QuantityMeasurementApp {
-    
-	/* =========================
-    UC1 → FEET IMPLEMENTATION
-    ========================= */
- public static class Feet {
-     private final double value;
 
-     public Feet(double value) {
-         this.value = value;
-     }
+    public static boolean compare(double v1, Length.Unit u1, double v2, Length.Unit u2) {
 
-     @Override
-     public boolean equals(Object obj) {
-         if (this == obj) return true;
-         if (obj == null || getClass() != obj.getClass()) return false;
+        Length l1 = new Length(v1, u1);
+        Length l2 = new Length(v2, u2);
 
-         Feet other = (Feet) obj;
-         return Double.compare(this.value, other.value) == 0;
-     }
- }
+        return l1.equals(l2);
+    }
 
- /* =========================
-    UC2 → INCH IMPLEMENTATION
-    ========================= */
- public static class Inches {
-     private final double value;
+    public static void main(String[] args) {
 
-     public Inches(double value) {
-         this.value = value;
-     }
+        System.out.println(compare(1, Length.Unit.FEET, 12, Length.Unit.INCHES));
 
-     @Override
-     public boolean equals(Object obj) {
-         if (this == obj) return true;
-         if (obj == null || getClass() != obj.getClass()) return false;
+        System.out.println(compare(2, Length.Unit.FEET, 24, Length.Unit.INCHES));
 
-         Inches other = (Inches) obj;
-         return Double.compare(this.value, other.value) == 0;
-     }
- }
-
- /* =========================
-    STATIC METHODS (UC2 REQUIREMENT)
-    ========================= */
-
- public static boolean demonstrateFeetEquality(double v1, double v2) {
-     Feet f1 = new Feet(v1);
-     Feet f2 = new Feet(v2);
-     return f1.equals(f2);
- }
-
- public static boolean demonstrateInchesEquality(double v1, double v2) {
-     Inches i1 = new Inches(v1);
-     Inches i2 = new Inches(v2);
-     return i1.equals(i2);
- }
-
- public static void main(String[] args) {
-
-     System.out.println(demonstrateFeetEquality(1.0, 1.0));   // true
-     System.out.println(demonstrateFeetEquality(1.0, 2.0));   // false
-
-     System.out.println(demonstrateInchesEquality(5.0, 5.0)); // true
-     System.out.println(demonstrateInchesEquality(5.0, 7.0)); // false
- }
+        System.out.println(compare(1, Length.Unit.FEET, 10, Length.Unit.INCHES));
+    }
 }
