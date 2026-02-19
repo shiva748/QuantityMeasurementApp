@@ -57,4 +57,21 @@ public class Length {
     public String toString() {
         return value + " " + unit;
     }
+    
+    // Main method for standalone testing
+    public static void main(String args[]) {
+
+    	Length length1 = new Length(1.0, Unit.FEET);
+    	Length length2 = new Length(12.0, Unit.INCHES);
+    	System.out.println("Are Length equal? "+ length1.equals(length2));
+
+    	Length length3 = new Length(1.0, Unit.YARDS);
+    	Length length4 = new Length(36.0, Unit.INCHES);
+    	System.out.println("Are Length equal? "+ length3.equals(length4));
+    	
+    	Length length5 = new Length(100.0, Unit.CENTIMETERS);
+    	Length length6 = new Length(39.3701, Unit.INCHES);
+    	System.out.println("Are Length equal? "+ length5.equals(length6));
+
+    }
 }
