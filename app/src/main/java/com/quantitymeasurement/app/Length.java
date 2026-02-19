@@ -8,14 +8,19 @@ public class Length {
     private final Unit unit;
 
     public Length(double value, Unit unit) {
+        if (unit == null) {
+            throw new IllegalArgumentException("Unit cannot be null");
+        }
         this.value = value;
         this.unit = unit;
     }
 
     public enum Unit {
 
-        FEET(12),
-        INCHES(1);
+        FEET(12),               // 1 ft = 12 inches
+        INCHES(1),              // Base unit
+        YARDS(36),              // 1 yd = 36 inches
+        CENTIMETERS(0.393701);  // 1 cm = 0.393701 inches
 
         private final double conversionFactorToInches;
 
@@ -46,5 +51,10 @@ public class Length {
     @Override
     public int hashCode() {
         return Objects.hash(toInches());
+    }
+
+    @Override
+    public String toString() {
+        return value + " " + unit;
     }
 }
