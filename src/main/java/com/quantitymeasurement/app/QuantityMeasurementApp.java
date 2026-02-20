@@ -23,6 +23,41 @@ public class QuantityMeasurementApp {
     }
 
     /*
+     * Demonstrate length conversion from one unit to another 
+    */
+    
+    public static Length demonstrateLengthConversion(
+            double value,
+            Length.Unit source,
+            Length.Unit target) {
+
+        if (source == null || target == null) {
+            throw new IllegalArgumentException("Units cannot be null");
+        }
+        
+        Length sourceLength = new Length(value, source);
+        return sourceLength.convertTo(target);
+    }
+    
+    /*
+     * Demonstrate length conversion to target unit 
+    */
+    
+    public static Length demonstrateLengthConversion(
+            Length length,
+            Length.Unit target) {
+    	if(length == null) {
+    		throw new IllegalArgumentException("Length cannot be null");
+    	}
+    	
+        if (target == null) {
+            throw new IllegalArgumentException("Unit cannot be null");
+        }
+
+        return length.convertTo(target);
+    }
+    
+    /*
      * Main method to demonstrate UC4 extended unit support
      */
     public static void main(String[] args) {
@@ -61,5 +96,27 @@ public class QuantityMeasurementApp {
         System.out.println(demonstrateLengthComparison(
                 1.0, Length.Unit.YARDS,
                 2.0, Length.Unit.FEET)); // false
+        
+     // method call to demonstrate UC5
+
+     // convert(1.0, FEET, INCHES) → 12.0
+     System.out.println("1 FEET to INCHES: " +
+             demonstrateLengthConversion(1.0, Length.Unit.FEET, Length.Unit.INCHES));
+
+     // convert(3.0, YARDS, FEET) → 9.0
+     System.out.println("3 YARDS to FEET: " +
+             demonstrateLengthConversion(3.0, Length.Unit.YARDS, Length.Unit.FEET));
+
+     // convert(36.0, INCHES, YARDS) → 1.0
+     System.out.println("36 INCHES to YARDS: " +
+             demonstrateLengthConversion(36.0, Length.Unit.INCHES, Length.Unit.YARDS));
+
+     // convert(1.0, CENTIMETERS, INCHES) → ~0.393701
+     System.out.println("1 CM to INCHES: " +
+             demonstrateLengthConversion(1.0, Length.Unit.CENTIMETERS, Length.Unit.INCHES));
+
+     // convert(0.0, FEET, INCHES) → 0.0
+     System.out.println("0 FEET to INCHES: " +
+             demonstrateLengthConversion(0.0, Length.Unit.FEET, Length.Unit.INCHES));
     }
 }

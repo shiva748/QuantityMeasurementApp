@@ -37,6 +37,28 @@ public class Length {
         return unit.convertToBase(value);
     }
 
+    public Length convertTo(Unit targetUnit) {
+
+        if (targetUnit == null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
+
+        if (!Double.isFinite(this.value)) {
+            throw new IllegalArgumentException("Invalid value");
+        }
+
+        // Convert to base (inches)
+        double baseValue = this.toInches();
+
+        // Convert to target unit
+        double convertedValue = baseValue / targetUnit.conversionFactorToInches;
+
+        // Round to 2 decimal places
+        convertedValue = Math.round(convertedValue * 100.0) / 100.0;
+
+        return new Length(convertedValue, targetUnit);
+    }
+    
     @Override
     public boolean equals(Object obj) {
 
