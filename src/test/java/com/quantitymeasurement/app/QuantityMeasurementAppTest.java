@@ -276,4 +276,126 @@ public class QuantityMeasurementAppTest {
              () -> QuantityMeasurementApp
                      .demonstrateLengthConversion(Double.POSITIVE_INFINITY, Length.Unit.FEET, Length.Unit.INCHES));
  }
+ 
+ /* =========================================================
+ UC6: ADDITION TESTS
+ ========================================================= */
+
+@Test
+void testAddition_SameUnit_FeetPlusFeet() {
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(1.0, Length.Unit.FEET),
+          new Length(2.0, Length.Unit.FEET));
+
+  assertEquals(new Length(3.0, Length.Unit.FEET), result);
+}
+
+@Test
+void testAddition_SameUnit_InchPlusInch() {
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(6.0, Length.Unit.INCHES),
+          new Length(6.0, Length.Unit.INCHES));
+
+  assertEquals(new Length(12.0, Length.Unit.INCHES), result);
+}
+
+@Test
+void testAddition_CrossUnit_FeetPlusInches() {
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(1.0, Length.Unit.FEET),
+          new Length(12.0, Length.Unit.INCHES));
+
+  assertEquals(new Length(2.0, Length.Unit.FEET), result);
+}
+
+@Test
+void testAddition_CrossUnit_InchPlusFeet() {
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(12.0, Length.Unit.INCHES),
+          new Length(1.0, Length.Unit.FEET));
+
+  assertEquals(new Length(24.0, Length.Unit.INCHES), result);
+}
+
+@Test
+void testAddition_CrossUnit_YardPlusFeet() {
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(1.0, Length.Unit.YARDS),
+          new Length(3.0, Length.Unit.FEET));
+
+  assertEquals(new Length(2.0, Length.Unit.YARDS), result);
+}
+
+@Test
+void testAddition_CrossUnit_CentimeterPlusInch() {
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(2.54, Length.Unit.CENTIMETERS),
+          new Length(1.0, Length.Unit.INCHES));
+
+  assertEquals(new Length(5.08, Length.Unit.CENTIMETERS), result);
+}
+
+/* =========================================================
+ UC6: MATHEMATICAL PROPERTIES
+ ========================================================= */
+
+@Test
+void testAddition_Commutativity() {
+  Length l1 = new Length(1.0, Length.Unit.FEET);
+  Length l2 = new Length(12.0, Length.Unit.INCHES);
+
+  Length result1 = QuantityMeasurementApp.demonstrateLengthAddition(l1, l2);
+  Length result2 = QuantityMeasurementApp.demonstrateLengthAddition(l2, l1);
+
+  assertTrue(result1.equals(result2));
+}
+
+@Test
+void testAddition_WithZero() {
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(5.0, Length.Unit.FEET),
+          new Length(0.0, Length.Unit.INCHES));
+
+  assertEquals(new Length(5.0, Length.Unit.FEET), result);
+}
+
+@Test
+void testAddition_NegativeValues() {
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(5.0, Length.Unit.FEET),
+          new Length(-2.0, Length.Unit.FEET));
+
+  assertEquals(new Length(3.0, Length.Unit.FEET), result);
+}
+
+/* =========================================================
+ UC6: EDGE CASES
+ ========================================================= */
+
+@Test
+void testAddition_NullSecondOperand() {
+  assertThrows(IllegalArgumentException.class,
+          () -> QuantityMeasurementApp.demonstrateLengthAddition(
+                  new Length(1.0, Length.Unit.FEET), null));
+}
+
+@Test
+void testAddition_LargeValues() {
+  Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+          new Length(1e6, Length.Unit.FEET),
+          new Length(1e6, Length.Unit.FEET));
+
+  assertEquals(new Length(2e6, Length.Unit.FEET), result);
+}
+
+@Test
+void testAddition_WithTargetUnit() {
+    Length result = QuantityMeasurementApp.demonstrateLengthAddition(
+            new Length(1.0, Length.Unit.FEET),
+            new Length(12.0, Length.Unit.INCHES),
+            Length.Unit.INCHES);
+
+    assertEquals(new Length(24.0, Length.Unit.INCHES), result);
+}
+ 
 }

@@ -59,6 +59,40 @@ public class Length {
         return new Length(convertedValue, targetUnit);
     }
     
+    public Length add(Length thatLength) {
+
+        if (thatLength == null) {
+            throw new IllegalArgumentException("Length cannot be null");
+        }
+
+        if (!Double.isFinite(this.value) || !Double.isFinite(thatLength.value)) {
+            throw new IllegalArgumentException("Invalid value");
+        }
+
+        // Convert both to base unit (inches)
+        double thisInches = this.toInches();
+        double otherInches = thatLength.toInches();
+
+        // Add
+        double sumInches = thisInches + otherInches;
+
+        // Convert back to THIS unit
+        double result = sumInches / this.unit.conversionFactorToInches;
+
+        // Round to 2 decimal places
+        result = Math.round(result * 100.0) / 100.0;
+
+        return new Length(result, this.unit);
+    }
+    
+    public Length add(Length length2, Unit unit) {
+    	if (unit == null || length2 == null) {
+            throw new IllegalArgumentException("Unit cannot be null");
+        }
+    	return this.add(length2).convertTo(unit);
+    }
+
+    
     @Override
     public boolean equals(Object obj) {
 
