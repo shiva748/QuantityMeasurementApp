@@ -84,13 +84,6 @@ public class Length {
 
         return new Length(result, this.unit);
     }
-    
-    public Length add(Length length2, Unit unit) {
-    	if (unit == null || length2 == null) {
-            throw new IllegalArgumentException("Unit cannot be null");
-        }
-    	return this.add(length2).convertTo(unit);
-    }
 
     
     @Override

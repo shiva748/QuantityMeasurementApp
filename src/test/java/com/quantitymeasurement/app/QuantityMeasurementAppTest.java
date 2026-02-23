@@ -387,15 +387,5 @@ void testAddition_LargeValues() {
 
   assertEquals(new Length(2e6, Length.Unit.FEET), result);
 }
-
-@Test
-void testAddition_WithTargetUnit() {
-    Length result = QuantityMeasurementApp.demonstrateLengthAddition(
-            new Length(1.0, Length.Unit.FEET),
-            new Length(12.0, Length.Unit.INCHES),
-            Length.Unit.INCHES);
-
-    assertEquals(new Length(24.0, Length.Unit.INCHES), result);
-}
  
 }
