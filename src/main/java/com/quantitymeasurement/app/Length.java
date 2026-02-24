@@ -5,9 +5,9 @@ import java.util.Objects;
 public class Length {
 
     private final double value;
-    private final Unit unit;
+    private final LengthUnit unit;
 
-    public Length(double value, Unit unit) {
+    public Length(double value, LengthUnit unit) {
         if (unit == null) {
             throw new IllegalArgumentException("Unit cannot be null");
         }
@@ -19,7 +19,7 @@ public class Length {
         return unit.convertToBase(value);
     }
 
-    public Length convertTo(Unit targetUnit) {
+    public Length convertTo(LengthUnit targetUnit) {
 
         if (targetUnit == null) {
             throw new IllegalArgumentException("Target unit cannot be null");
@@ -33,7 +33,7 @@ public class Length {
         double baseValue = this.toInches();
 
         // Convert to target unit
-        double convertedValue = baseValue / targetUnit.conversionFactorToInches;
+        double convertedValue = baseValue / targetUnit.getConversionFactor();
 
         // Round to 2 decimal places
         convertedValue = Math.round(convertedValue * 100.0) / 100.0;
@@ -59,7 +59,7 @@ public class Length {
         double sumInches = thisInches + otherInches;
 
         // Convert back to THIS unit
-        double result = sumInches / this.unit.conversionFactorToInches;
+        double result = sumInches / this.unit.getConversionFactor();
 
         // Round to 2 decimal places
         result = Math.round(result * 100.0) / 100.0;
@@ -67,7 +67,7 @@ public class Length {
         return new Length(result, this.unit);
     }
     
-    public Length add(Length length2, Unit unit) {
+    public Length add(Length length2, LengthUnit unit) {
     	if(length2 == null) {
     		throw new IllegalArgumentException("Length cannot be null");
     	} else if (unit == null) {
@@ -101,16 +101,16 @@ public class Length {
     // Main method for standalone testing
     public static void main(String args[]) {
 
-    	Length length1 = new Length(1.0, Unit.FEET);
-    	Length length2 = new Length(12.0, Unit.INCHES);
+    	Length length1 = new Length(1.0, LengthUnit.FEET);
+    	Length length2 = new Length(12.0, LengthUnit.INCHES);
     	System.out.println("Are Length equal? "+ length1.equals(length2));
 
-    	Length length3 = new Length(1.0, Unit.YARDS);
-    	Length length4 = new Length(36.0, Unit.INCHES);
+    	Length length3 = new Length(1.0, LengthUnit.YARDS);
+    	Length length4 = new Length(36.0, LengthUnit.INCHES);
     	System.out.println("Are Length equal? "+ length3.equals(length4));
     	
-    	Length length5 = new Length(100.0, Unit.CENTIMETERS);
-    	Length length6 = new Length(39.3701, Unit.INCHES);
+    	Length length5 = new Length(100.0, LengthUnit.CENTIMETERS);
+    	Length length6 = new Length(39.3701, LengthUnit.INCHES);
     	System.out.println("Are Length equal? "+ length5.equals(length6));
 
     }
