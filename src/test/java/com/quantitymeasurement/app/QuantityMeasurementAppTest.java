@@ -520,5 +520,4 @@ void testAddition_ExplicitTargetUnit_SmallToLargeScale() {
  Length expected = new Length(0.67, LengthUnit.YARDS);
  assertTrue(result.equals(expected));
 }
- 
 }

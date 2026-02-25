@@ -76,6 +76,78 @@ public class QuantityMeasurementApp {
 	}
     
     /*
+     * ===================== WEIGHT METHODS (UC9) =====================
+     */
+
+    // Equality
+    public static boolean demonstrateWeightEquality(Weight w1, Weight w2) {
+        if (w1 == null || w2 == null) {
+            throw new IllegalArgumentException("Weight cannot be null");
+        }
+        return w1.equals(w2);
+    }
+
+    // Comparison
+    public static boolean demonstrateWeightComparison(
+            double value1, WeightUnit unit1,
+            double value2, WeightUnit unit2) {
+
+        Weight w1 = new Weight(value1, unit1);
+        Weight w2 = new Weight(value2, unit2);
+
+        return w1.equals(w2);
+    }
+
+    // Conversion (value based)
+    public static Weight demonstrateWeightConversion(
+            double value,
+            WeightUnit source,
+            WeightUnit target) {
+
+        if (source == null || target == null) {
+            throw new IllegalArgumentException("Units cannot be null");
+        }
+
+        Weight weight = new Weight(value, source);
+        return weight.convertTo(target);
+    }
+
+    // Conversion (object based)
+    public static Weight demonstrateWeightConversion(
+            Weight weight,
+            WeightUnit target) {
+
+        if (weight == null) {
+            throw new IllegalArgumentException("Weight cannot be null");
+        }
+
+        if (target == null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
+
+        return weight.convertTo(target);
+    }
+
+    // Addition (default unit = first operand)
+    public static Weight demonstrateWeightAddition(Weight w1, Weight w2) {
+        if (w1 == null || w2 == null) {
+            throw new IllegalArgumentException("Weight cannot be null");
+        }
+        return w1.add(w2);
+    }
+
+    // Addition (explicit target unit)
+    public static Weight demonstrateWeightAddition(Weight w1, Weight w2, WeightUnit unit) {
+        if (w1 == null || w2 == null) {
+            throw new IllegalArgumentException("Weight cannot be null");
+        }
+        if (unit == null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
+        return w1.add(w2, unit);
+    }
+    
+    /*
      * Main method to demonstrate UC4 extended unit support
      */
     public static void main(String[] args) {
@@ -264,5 +336,64 @@ public class QuantityMeasurementApp {
                      new Length(-2.0, LengthUnit.FEET),
                      LengthUnit.INCHES
              ));
+     /*
+      * ===================== WEIGHT DEMO =====================
+      */
+
+     System.out.println("\n================ WEIGHT OPERATIONS (UC9) ================\n");
+
+     // Equality
+     System.out.println("1 KG == 1000 G : " +
+             demonstrateWeightComparison(1.0, WeightUnit.KILOGRAM,
+                     1000.0, WeightUnit.GRAM));
+
+     System.out.println("1 KG == 2.20462 LB : " +
+             demonstrateWeightComparison(1.0, WeightUnit.KILOGRAM,
+                     2.20462, WeightUnit.POUND));
+
+     // Conversion
+     System.out.println("1 KG to GRAM = " +
+             demonstrateWeightConversion(1.0, WeightUnit.KILOGRAM, WeightUnit.GRAM));
+
+     System.out.println("2 LB to KG = " +
+             demonstrateWeightConversion(2.0, WeightUnit.POUND, WeightUnit.KILOGRAM));
+
+     System.out.println("500 G to LB = " +
+             demonstrateWeightConversion(500.0, WeightUnit.GRAM, WeightUnit.POUND));
+
+     // Addition
+     System.out.println("1 KG + 2 KG = " +
+             demonstrateWeightAddition(
+                     new Weight(1.0, WeightUnit.KILOGRAM),
+                     new Weight(2.0, WeightUnit.KILOGRAM)));
+
+     System.out.println("1 KG + 1000 G = " +
+             demonstrateWeightAddition(
+                     new Weight(1.0, WeightUnit.KILOGRAM),
+                     new Weight(1000.0, WeightUnit.GRAM)));
+
+     System.out.println("500 G + 0.5 KG = " +
+             demonstrateWeightAddition(
+                     new Weight(500.0, WeightUnit.GRAM),
+                     new Weight(0.5, WeightUnit.KILOGRAM)));
+
+     // Addition with target unit
+     System.out.println("1 KG + 1000 G (GRAM) = " +
+             demonstrateWeightAddition(
+                     new Weight(1.0, WeightUnit.KILOGRAM),
+                     new Weight(1000.0, WeightUnit.GRAM),
+                     WeightUnit.GRAM));
+
+     System.out.println("1 LB + 453.592 G (POUND) = " +
+             demonstrateWeightAddition(
+                     new Weight(1.0, WeightUnit.POUND),
+                     new Weight(453.592, WeightUnit.GRAM),
+                     WeightUnit.POUND));
+
+     System.out.println("2 KG + 4 LB (KG) = " +
+             demonstrateWeightAddition(
+                     new Weight(2.0, WeightUnit.KILOGRAM),
+                     new Weight(4.0, WeightUnit.POUND),
+                     WeightUnit.KILOGRAM));
     }
 }
