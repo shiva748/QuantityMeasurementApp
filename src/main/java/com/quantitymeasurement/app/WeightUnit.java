@@ -3,7 +3,7 @@ package com.quantitymeasurement.app;
 
 //================= UC9 WeightUnit ENUM =================
 
-public enum WeightUnit {
+public enum WeightUnit implements IMeasurable{
 
     MILLIGRAM(0.001),
     GRAM(1.0),              // Base unit
@@ -16,12 +16,14 @@ public enum WeightUnit {
     WeightUnit(double conversionFactor) {
         this.conversionFactor = conversionFactor;
     }
-
-    public double convertToBase(double value) {
-        return value * conversionFactor;
-    }
     
+    @Override
     public double getConversionFactor() {
     	return conversionFactor;
     }
+
+	@Override
+	public String getUnitName() {
+		return name();
+	}
 }
