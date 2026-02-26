@@ -86,5 +86,98 @@ public class QuantityMeasurementApp {
 	    // Manual check using equals (should be false)
 	    System.out.println("Input: " + length + " equals " + weight +
 	            " → Output: " + length.equals(weight));
+	    
+	    /* =========================================================
+        VOLUME OPERATIONS (NEW CATEGORY)
+        ========================================================= */
+
+     System.out.println("\n----- VOLUME OPERATIONS -----");
+
+     Quantity<VolumeUnit> v1 = new Quantity<>(1.0, VolumeUnit.LITRE);
+     Quantity<VolumeUnit> v2 = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+     Quantity<VolumeUnit> v3 = new Quantity<>(1.0, VolumeUnit.GALLON);
+     Quantity<VolumeUnit> v4 = new Quantity<>(0.264172, VolumeUnit.GALLON);
+     Quantity<VolumeUnit> v5 = new Quantity<>(500.0, VolumeUnit.MILLILITRE);
+     Quantity<VolumeUnit> v6 = new Quantity<>(0.5, VolumeUnit.LITRE);
+     Quantity<VolumeUnit> v7 = new Quantity<>(3.78541, VolumeUnit.LITRE);
+
+     /* ================= EQUALITY ================= */
+
+     System.out.println("\n--- Equality Comparisons ---");
+
+     demonstrateEquality(
+             new Quantity<>(1.0, VolumeUnit.LITRE),
+             new Quantity<>(1.0, VolumeUnit.LITRE));
+
+     demonstrateEquality(v1, v2);
+
+     demonstrateEquality(
+             new Quantity<>(1.0, VolumeUnit.GALLON),
+             new Quantity<>(1.0, VolumeUnit.GALLON));
+
+     demonstrateEquality(v1, v4);
+
+     demonstrateEquality(v5, v6);
+
+     demonstrateEquality(v7, new Quantity<>(1.0, VolumeUnit.GALLON));
+     
+     demonstrateEquality(
+    	        v3,
+    	        new Quantity<>(1.0, VolumeUnit.GALLON));
+
+
+     /* ================= CONVERSION ================= */
+
+     System.out.println("\n--- Unit Conversions ---");
+
+     demonstrateConversion(v1, VolumeUnit.MILLILITRE);
+
+     demonstrateConversion(
+             new Quantity<>(2.0, VolumeUnit.GALLON),
+             VolumeUnit.LITRE);
+
+     demonstrateConversion(v5, VolumeUnit.GALLON);
+
+     demonstrateConversion(
+             new Quantity<>(0.0, VolumeUnit.LITRE),
+             VolumeUnit.MILLILITRE);
+
+     demonstrateConversion(v1, VolumeUnit.LITRE);
+
+
+     /* ================= ADDITION (DEFAULT) ================= */
+
+     System.out.println("\n--- Addition (Default Unit) ---");
+
+     demonstrateAddition(
+             new Quantity<>(1.0, VolumeUnit.LITRE),
+             new Quantity<>(2.0, VolumeUnit.LITRE));
+
+     demonstrateAddition(v1, v2);
+
+     demonstrateAddition(v5, v6);
+
+     demonstrateAddition(
+             new Quantity<>(2.0, VolumeUnit.GALLON),
+             new Quantity<>(3.78541, VolumeUnit.LITRE));
+
+
+     /* ================= ADDITION (TARGET UNIT) ================= */
+
+     System.out.println("\n--- Addition (Target Unit) ---");
+
+     demonstrateAddition(v1, v2, VolumeUnit.MILLILITRE);
+
+     demonstrateAddition(
+             new Quantity<>(1.0, VolumeUnit.GALLON),
+             new Quantity<>(3.78541, VolumeUnit.LITRE),
+             VolumeUnit.GALLON);
+
+     demonstrateAddition(v5, v1, VolumeUnit.GALLON);
+
+     demonstrateAddition(
+             new Quantity<>(2.0, VolumeUnit.LITRE),
+             new Quantity<>(4.0, VolumeUnit.GALLON),
+             VolumeUnit.LITRE);
 	}
 }
