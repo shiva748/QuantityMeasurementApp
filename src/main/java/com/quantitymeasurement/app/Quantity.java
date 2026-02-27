@@ -1,121 +1,126 @@
 package com.quantitymeasurement.app;
 
 import java.util.Objects;
+import java.util.function.DoubleBinaryOperator;
 
 public class Quantity<U extends IMeasurable> {
-	private final double value;
-	
-	private final U unit;
-	
-	
-	public double getValue() {
-		return value;
-	}
 
-	public U getUnit() {
-		return unit;
-	}
+    private enum ArithmeticOperation {
+        ADD((a, b) -> a + b),
+        SUBTRACT((a, b) -> a - b),
+        DIVIDE((a, b) -> {
+            if (Math.abs(b) < EPSILON) {
+                throw new ArithmeticException("Divisor can't be 0.");
+            }
+            return a / b;
+        });
 
-	public Quantity(double value, U unit) {
-		if (unit == null) {
+        private final DoubleBinaryOperator operation;
+
+        ArithmeticOperation(DoubleBinaryOperator operation) {
+            this.operation = operation;
+        }
+
+        public double compute(double a, double b) {
+            return operation.applyAsDouble(a, b);
+        }
+    }
+
+    private final double value;
+    private final U unit;
+
+    private static final double EPSILON = 1e-9;
+
+    public Quantity(double value, U unit) {
+        if (unit == null) {
             throw new IllegalArgumentException("Unit cannot be null.");
-        }else if(!Double.isFinite(value)) {
-        	throw new IllegalArgumentException("value cannot be Infinite.");
+        }
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException("Value cannot be infinite.");
         }
         this.value = value;
         this.unit = unit;
-	}
-	
-	private double toBase() {
-		return unit.convertToBaseUnit(value);
-	}
-	
-	private static final double EPSILON = 1e-9;
-	
-	public Quantity<U> convertTo(U targetUnit){
-		if(targetUnit == null) {
-			throw new IllegalArgumentException("Target unit cannot be null");
-		}
-		// convert to base unit
-		double baseValue = this.toBase();
-		// convert to target unit
-		double convertedValue = baseValue / targetUnit.getConversionFactor();
-		System.out.print(convertedValue);
-		return new Quantity<U>(round(convertedValue), targetUnit);
-	}
-	
-	public Quantity<U> add(Quantity<U> thatQuantity){
-		if(thatQuantity == null) {
-			throw new IllegalArgumentException("Quantity can not be null");
-		}
-		
-		double thisBase = (toBase() + thatQuantity.toBase())/this.unit.getConversionFactor();
-		
-		return new Quantity<>(round(thisBase), this.unit);
-	}
-	
-	
-	private double round(double value) {
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public U getUnit() {
+        return unit;
+    }
+
+    private double toBase() {
+        return unit.convertToBaseUnit(value);
+    }
+
+    private double round(double value) {
         return Math.round(value * 100.0) / 100.0;
     }
-	
-	public Quantity<U> add(Quantity<U> thatQuantity, U targetUnit){
-		if(thatQuantity == null || unit == null) {
-			throw new IllegalArgumentException("Quantity and Targetunit can not be null");
-		}
-		return this.add(thatQuantity).convertTo(targetUnit);
-	}
-	
-	public Quantity<U> subtract(Quantity<U> thatQuantity){
-		if(thatQuantity == null) {
-			throw new IllegalArgumentException("Quantity can not be null");
-		}
-		
-		double thisBase = (toBase() - thatQuantity.toBase())/this.unit.getConversionFactor();
-		
-		return new Quantity<>(round(thisBase), this.unit);
-	}
-	
-	public Quantity<U> subtract(Quantity<U> thatQuantity, U targetUnit){
-		if(thatQuantity == null || unit == null) {
-			throw new IllegalArgumentException("Quantity and Targetunit can not be null");
-		}
-		return this.subtract(thatQuantity).convertTo(targetUnit);
-	}
-	
-	public double divide(Quantity<U> thatQuantity){
-		if(thatQuantity == null) {
-			throw new IllegalArgumentException("Quantity can not be null");
-		}else if(thatQuantity.value < EPSILON) {
-			throw new ArithmeticException("Divisor can't be 0 or negative.");
-		}
-		return round(this.toBase()/thatQuantity.toBase());
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Quantity<?>)) {
-			return false; 
-		}
-		Quantity<?> that = (Quantity<?>) obj;
-		if(this.unit.getClass() != that.unit.getClass()) {
-			return false;
-		}
-		return Double.compare( this.unit.convertToBaseUnit(value), that.unit.convertToBaseUnit(that.value)) < EPSILON;
-	}
-	
-	@Override
-    public int hashCode() {
-        return Objects.hash(toBase());
+
+    // 🔥 Centralized operation method
+    private Quantity<U> operate(Quantity<U> that, ArithmeticOperation op) {
+        if (that == null) {
+            throw new IllegalArgumentException("Quantity cannot be null");
+        }
+
+        double resultBase = op.compute(this.toBase(), that.toBase());
+        double result = resultBase / this.unit.getConversionFactor();
+
+        return new Quantity<>(round(result), this.unit);
     }
-	
-	@Override
+
+    public Quantity<U> add(Quantity<U> that) {
+        return operate(that, ArithmeticOperation.ADD);
+    }
+
+    public Quantity<U> subtract(Quantity<U> that) {
+        return operate(that, ArithmeticOperation.SUBTRACT);
+    }
+
+    public double divide(Quantity<U> that) {
+        if (that == null) {
+            throw new IllegalArgumentException("Quantity cannot be null");
+        }
+        return round(ArithmeticOperation.DIVIDE.compute(this.toBase(), that.toBase()));
+    }
+
+    public Quantity<U> convertTo(U targetUnit) {
+        if (targetUnit == null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
+
+        double baseValue = this.toBase();
+        double convertedValue = baseValue / targetUnit.getConversionFactor();
+
+        return new Quantity<>(round(convertedValue), targetUnit);
+    }
+
+    public Quantity<U> add(Quantity<U> that, U targetUnit) {
+        return this.add(that).convertTo(targetUnit);
+    }
+
+    public Quantity<U> subtract(Quantity<U> that, U targetUnit) {
+        return this.subtract(that).convertTo(targetUnit);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Quantity<?> that)) return false;
+
+        if (this.unit.getClass() != that.unit.getClass()) return false;
+
+        return Math.abs(this.toBase() - that.toBase()) < EPSILON;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(round(toBase()));
+    }
+
+    @Override
     public String toString() {
         return value + " " + unit;
     }
-	
 }
