@@ -35,8 +35,6 @@ public class Quantity<U extends IMeasurable> {
 	public Quantity<U> convertTo(U targetUnit){
 		if(targetUnit == null) {
 			throw new IllegalArgumentException("Target unit cannot be null");
-		}else if(!sameDomain(this.unit, targetUnit)) {
-			throw new IllegalArgumentException("Invalid target unit");
 		}
 		// convert to base unit
 		double baseValue = this.toBase();
@@ -49,8 +47,6 @@ public class Quantity<U extends IMeasurable> {
 	public Quantity<U> add(Quantity<U> thatQuantity){
 		if(thatQuantity == null) {
 			throw new IllegalArgumentException("Quantity can not be null");
-		}else if(!sameDomain(this.unit, thatQuantity.unit)) {
-			throw new IllegalArgumentException("Quantity's are not of same domain.");
 		}
 		
 		double thisBase = (toBase() + thatQuantity.toBase())/this.unit.getConversionFactor();
@@ -58,9 +54,6 @@ public class Quantity<U extends IMeasurable> {
 		return new Quantity<>(round(thisBase), this.unit);
 	}
 	
-	private boolean sameDomain(U unit1, U unit2) {
-		return unit1.getClass() == unit2.getClass();
-	}
 	
 	private double round(double value) {
         return Math.round(value * 100.0) / 100.0;
@@ -71,6 +64,32 @@ public class Quantity<U extends IMeasurable> {
 			throw new IllegalArgumentException("Quantity and Targetunit can not be null");
 		}
 		return this.add(thatQuantity).convertTo(targetUnit);
+	}
+	
+	public Quantity<U> subtract(Quantity<U> thatQuantity){
+		if(thatQuantity == null) {
+			throw new IllegalArgumentException("Quantity can not be null");
+		}
+		
+		double thisBase = (toBase() - thatQuantity.toBase())/this.unit.getConversionFactor();
+		
+		return new Quantity<>(round(thisBase), this.unit);
+	}
+	
+	public Quantity<U> subtract(Quantity<U> thatQuantity, U targetUnit){
+		if(thatQuantity == null || unit == null) {
+			throw new IllegalArgumentException("Quantity and Targetunit can not be null");
+		}
+		return this.subtract(thatQuantity).convertTo(targetUnit);
+	}
+	
+	public double divide(Quantity<U> thatQuantity){
+		if(thatQuantity == null) {
+			throw new IllegalArgumentException("Quantity can not be null");
+		}else if(thatQuantity.value < EPSILON) {
+			throw new ArithmeticException("Divisor can't be 0 or negative.");
+		}
+		return round(this.toBase()/thatQuantity.toBase());
 	}
 	
 	@Override
