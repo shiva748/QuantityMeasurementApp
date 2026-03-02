@@ -58,11 +58,15 @@ public class Quantity<U extends IMeasurable> {
         return Math.round(value * 100.0) / 100.0;
     }
 
-    // 🔥 Centralized operation method
     private Quantity<U> operate(Quantity<U> that, ArithmeticOperation op) {
+
         if (that == null) {
             throw new IllegalArgumentException("Quantity cannot be null");
         }
+
+        // 🔥 UC14 FIX → validate BEFORE operation
+        this.unit.validateOperationSupport(op.name());
+        that.unit.validateOperationSupport(op.name());
 
         double resultBase = op.compute(this.toBase(), that.toBase());
         double result = resultBase / this.unit.getConversionFactor();
@@ -82,12 +86,26 @@ public class Quantity<U extends IMeasurable> {
         if (that == null) {
             throw new IllegalArgumentException("Quantity cannot be null");
         }
+
+        // 🔥 UC14 FIX
+        this.unit.validateOperationSupport("DIVIDE");
+        that.unit.validateOperationSupport("DIVIDE");
+
         return round(ArithmeticOperation.DIVIDE.compute(this.toBase(), that.toBase()));
     }
 
     public Quantity<U> convertTo(U targetUnit) {
+
         if (targetUnit == null) {
             throw new IllegalArgumentException("Target unit cannot be null");
+        }
+
+        // 🔥 HANDLE TEMPERATURE SEPARATELY
+        if (unit instanceof TemperatureUnit source &&
+            targetUnit instanceof TemperatureUnit target) {
+
+            double converted = source.convertTo(this.value, target);
+            return new Quantity<>(round(converted), targetUnit);
         }
 
         double baseValue = this.toBase();
