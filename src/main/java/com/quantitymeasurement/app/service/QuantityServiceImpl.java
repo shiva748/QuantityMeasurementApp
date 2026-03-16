@@ -7,6 +7,7 @@ import com.quantitymeasurement.app.repository.IQuantityMeasurementRepository;
 
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class QuantityServiceImpl implements QuantityService {
 
     private final IQuantityMeasurementRepository repository;
@@ -22,11 +23,27 @@ public class QuantityServiceImpl implements QuantityService {
     @Override
     public <U extends IMeasurable> Quantity<U> add(Quantity<U> q1, Quantity<U> q2) {
 
-        Quantity<U> result = q1.add(q2);
+        try {
 
-        saveResult(result);
+            Quantity<U> result = q1.add(q2);
 
-        return result;
+            repository.save(
+                    new QuantityMeasurementEntity(
+                            (Quantity<IMeasurable>) q1,
+                            (Quantity<IMeasurable>) q2,
+                            "ADD",
+                            (Quantity<IMeasurable>) result
+                    )
+            );
+
+            return result;
+
+        } catch (Exception e) {
+
+            logError(q1, q2, "ADD", e);
+
+            throw e;
+        }
     }
 
     @Override
@@ -35,11 +52,27 @@ public class QuantityServiceImpl implements QuantityService {
             Quantity<U> q2,
             U targetUnit) {
 
-        Quantity<U> result = q1.add(q2, targetUnit);
+        try {
 
-        saveResult(result);
+            Quantity<U> result = q1.add(q2, targetUnit);
 
-        return result;
+            repository.save(
+                    new QuantityMeasurementEntity(
+                            (Quantity<IMeasurable>) q1,
+                            (Quantity<IMeasurable>) q2,
+                            "ADD",
+                            (Quantity<IMeasurable>) result
+                    )
+            );
+
+            return result;
+
+        } catch (Exception e) {
+
+            logError(q1, q2, "ADD", e);
+
+            throw e;
+        }
     }
 
     /* =========================================================
@@ -49,11 +82,27 @@ public class QuantityServiceImpl implements QuantityService {
     @Override
     public <U extends IMeasurable> Quantity<U> subtract(Quantity<U> q1, Quantity<U> q2) {
 
-        Quantity<U> result = q1.subtract(q2);
+        try {
 
-        saveResult(result);
+            Quantity<U> result = q1.subtract(q2);
 
-        return result;
+            repository.save(
+                    new QuantityMeasurementEntity(
+                            (Quantity<IMeasurable>) q1,
+                            (Quantity<IMeasurable>) q2,
+                            "SUBTRACT",
+                            (Quantity<IMeasurable>) result
+                    )
+            );
+
+            return result;
+
+        } catch (Exception e) {
+
+            logError(q1, q2, "SUBTRACT", e);
+
+            throw e;
+        }
     }
 
     @Override
@@ -62,11 +111,27 @@ public class QuantityServiceImpl implements QuantityService {
             Quantity<U> q2,
             U targetUnit) {
 
-        Quantity<U> result = q1.subtract(q2, targetUnit);
+        try {
 
-        saveResult(result);
+            Quantity<U> result = q1.subtract(q2, targetUnit);
 
-        return result;
+            repository.save(
+                    new QuantityMeasurementEntity(
+                            (Quantity<IMeasurable>) q1,
+                            (Quantity<IMeasurable>) q2,
+                            "SUBTRACT",
+                            (Quantity<IMeasurable>) result
+                    )
+            );
+
+            return result;
+
+        } catch (Exception e) {
+
+            logError(q1, q2, "SUBTRACT", e);
+
+            throw e;
+        }
     }
 
     /* =========================================================
@@ -76,9 +141,27 @@ public class QuantityServiceImpl implements QuantityService {
     @Override
     public <U extends IMeasurable> double divide(Quantity<U> q1, Quantity<U> q2) {
 
-        double result = q1.divide(q2);
+        try {
 
-        return result;
+            double result = q1.divide(q2);
+
+            repository.save(
+                    new QuantityMeasurementEntity(
+                            (Quantity<IMeasurable>) q1,
+                            (Quantity<IMeasurable>) q2,
+                            "DIVIDE",
+                            String.valueOf(result)
+                    )
+            );
+
+            return result;
+
+        } catch (Exception e) {
+
+            logError(q1, q2, "DIVIDE", e);
+
+            throw e;
+        }
     }
 
     /* =========================================================
@@ -90,15 +173,59 @@ public class QuantityServiceImpl implements QuantityService {
             Quantity<U> quantity,
             U targetUnit) {
 
-        Quantity<U> result = quantity.convertTo(targetUnit);
+        try {
 
-        saveResult(result);
+            Quantity<U> result = quantity.convertTo(targetUnit);
+
+            repository.save(
+                    new QuantityMeasurementEntity(
+                            (Quantity<IMeasurable>) quantity,
+                            (Quantity<IMeasurable>) result,
+                            "CONVERT",
+                            result.toString()
+                    )
+            );
+
+            return result;
+
+        } catch (Exception e) {
+
+            repository.save(
+                    new QuantityMeasurementEntity(
+                            (Quantity<IMeasurable>) quantity,
+                            (Quantity<IMeasurable>) quantity,
+                            "CONVERT",
+                            e.getMessage(),
+                            true
+                    )
+            );
+
+            throw e;
+        }
+    }
+
+    /* =========================================================
+       COMPARISON
+       ========================================================= */
+
+    public boolean compare(Quantity<IMeasurable> q1, Quantity<IMeasurable> q2) {
+
+        boolean result = q1.equals(q2);
+
+        repository.save(
+                new QuantityMeasurementEntity(
+                        q1,
+                        q2,
+                        "COMPARE",
+                        result ? "Equal" : "Not Equal"
+                )
+        );
 
         return result;
     }
 
     /* =========================================================
-       HISTORY ACCESS
+       HISTORY
        ========================================================= */
 
     public List<QuantityMeasurementEntity> getAllMeasurements() {
@@ -106,17 +233,23 @@ public class QuantityServiceImpl implements QuantityService {
     }
 
     /* =========================================================
-       PRIVATE HELPER
+       ERROR LOGGER
        ========================================================= */
 
-    private void saveResult(Quantity<?> quantity) {
+    private <U extends IMeasurable> void logError(
+            Quantity<U> q1,
+            Quantity<U> q2,
+            String operation,
+            Exception e) {
 
-        QuantityMeasurementEntity entity =
+        repository.save(
                 new QuantityMeasurementEntity(
-                        quantity.getValue(),
-                        quantity.getUnit().getUnitName()
-                );
-
-        repository.save(entity);
+                        (Quantity<IMeasurable>) q1,
+                        (Quantity<IMeasurable>) q2,
+                        operation,
+                        e.getMessage(),
+                        true
+                )
+        );
     }
 }
