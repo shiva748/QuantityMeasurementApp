@@ -1,6 +1,7 @@
 package com.quantitymeasurement.app.controller;
 
 import com.quantitymeasurement.app.dto.QuantityRequestDto;
+import com.quantitymeasurement.app.repository.QuantityMeasurementCacheRepository;
 import com.quantitymeasurement.app.service.QuantityServiceImpl;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class QuantityControllerTest {
 
     QuantityController controller =
-            new QuantityController(new QuantityServiceImpl());
+            new QuantityController(new QuantityServiceImpl(QuantityMeasurementCacheRepository.getInstance()));
 
     /* =========================================================
        EQUALITY TESTS

@@ -2,6 +2,8 @@ package com.quantitymeasurement.app;
 
 import com.quantitymeasurement.app.controller.QuantityController;
 import com.quantitymeasurement.app.dto.QuantityRequestDto;
+import com.quantitymeasurement.app.repository.IQuantityMeasurementRepository;
+import com.quantitymeasurement.app.repository.QuantityMeasurementCacheRepository;
 import com.quantitymeasurement.app.service.QuantityServiceImpl;
 
 public class QuantityMeasurementApp {
@@ -9,8 +11,8 @@ public class QuantityMeasurementApp {
     public static void main(String[] args) {
 
         System.out.println("===== Quantity Measurement Demonstration =====");
-
-        QuantityServiceImpl service = new QuantityServiceImpl();
+        IQuantityMeasurementRepository repository = QuantityMeasurementCacheRepository.getInstance();
+        QuantityServiceImpl service = new QuantityServiceImpl(repository);
         QuantityController controller = new QuantityController(service);
 
         /* =========================================================

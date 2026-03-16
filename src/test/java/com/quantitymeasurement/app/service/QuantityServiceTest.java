@@ -2,13 +2,15 @@ package com.quantitymeasurement.app.service;
 
 import com.quantitymeasurement.app.entity.Quantity;
 import com.quantitymeasurement.app.entity.units.*;
+import com.quantitymeasurement.app.repository.QuantityMeasurementCacheRepository;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class QuantityServiceTest {
 
-    QuantityService service = new QuantityServiceImpl();
+    QuantityService service = new QuantityServiceImpl(QuantityMeasurementCacheRepository.getInstance());
 
     /* =========================================================
        ADDITION TESTS
