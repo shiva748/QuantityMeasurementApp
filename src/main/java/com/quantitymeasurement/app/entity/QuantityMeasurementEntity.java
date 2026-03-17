@@ -109,4 +109,8 @@ public class QuantityMeasurementEntity implements Serializable {
         this.errorMessage = errorMessage;
         this.isError = isError;
     }
+    
+    public QuantityMeasurementEntity() {
+    	
+    }
 }
