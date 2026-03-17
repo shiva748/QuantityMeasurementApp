@@ -1,38 +1,45 @@
 package com.quantitymeasurement.app.entity;
 
-import java.io.Serializable;
+import jakarta.persistence.*;
+import lombok.*;
 
-public class QuantityMeasurementEntity implements Serializable {
+@Entity
+@Table(name = "quantity_measurement_history")
 
-    private static final long serialVersionUID = 1L;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 
-    public double thisValue;
-    public String thisUnit;
-    public String thisMeasurementType;
+public class QuantityMeasurementEntity {
 
-    public double thatValue;
-    public String thatUnit;
-    public String thatMeasurementType;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    // e.g. "COMPARE", "CONVERT", "ADD", "SUBTRACT", "DIVIDE"
-    public String operation;
+    private Double thisValue;
+    private String thisUnit;
+    private String thisMeasurementType;
 
-    public double resultValue;
-    public String resultUnit;
-    public String resultMeasurementType;
+    private Double thatValue;
+    private String thatUnit;
+    private String thatMeasurementType;
 
-    // For comparison results like "Equal" or "Not Equal"
-    public String resultString;
+    private String operation;
 
-    // Flag to indicate if an error occurred
-    public boolean isError;
+    private Double resultValue;
+    private String resultUnit;
+    private String resultMeasurementType;
 
-    // Error message
-    public String errorMessage;
+    private String resultString;
+
+    private Boolean isError;
+    private String errorMessage;
 
 
     /* =========================================================
-       BASE CONSTRUCTOR
+       CUSTOM CONSTRUCTORS (KEEP YOUR LOGIC)
        ========================================================= */
 
     private QuantityMeasurementEntity(
@@ -54,27 +61,15 @@ public class QuantityMeasurementEntity implements Serializable {
         this.operation = operation;
     }
 
-
-    /* =========================================================
-       COMPARISON / CONVERSION
-       ========================================================= */
-
     public QuantityMeasurementEntity(
             Quantity<IMeasurable> thisQuantity,
             Quantity<IMeasurable> thatQuantity,
             String operation,
             String result
     ) {
-
         this(thisQuantity, thatQuantity, operation);
-
         this.resultString = result;
     }
-
-
-    /* =========================================================
-       ARITHMETIC OPERATIONS
-       ========================================================= */
 
     public QuantityMeasurementEntity(
             Quantity<IMeasurable> thisQuantity,
@@ -82,19 +77,12 @@ public class QuantityMeasurementEntity implements Serializable {
             String operation,
             Quantity<IMeasurable> result
     ) {
-
         this(thisQuantity, thatQuantity, operation);
-
         this.resultValue = result.getValue();
         this.resultUnit = result.getUnit().getUnitName();
         this.resultMeasurementType =
                 result.getUnit().getClass().getSimpleName();
     }
-
-
-    /* =========================================================
-       ERROR HANDLING
-       ========================================================= */
 
     public QuantityMeasurementEntity(
             Quantity<IMeasurable> thisQuantity,
@@ -103,14 +91,8 @@ public class QuantityMeasurementEntity implements Serializable {
             String errorMessage,
             boolean isError
     ) {
-
         this(thisQuantity, thatQuantity, operation);
-
         this.errorMessage = errorMessage;
         this.isError = isError;
-    }
-    
-    public QuantityMeasurementEntity() {
-    	
     }
 }

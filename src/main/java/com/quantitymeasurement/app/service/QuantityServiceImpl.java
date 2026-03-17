@@ -3,19 +3,21 @@ package com.quantitymeasurement.app.service;
 import com.quantitymeasurement.app.entity.IMeasurable;
 import com.quantitymeasurement.app.entity.Quantity;
 import com.quantitymeasurement.app.entity.QuantityMeasurementEntity;
-import com.quantitymeasurement.app.repository.IQuantityMeasurementRepository;
+import com.quantitymeasurement.app.repository.QuantityMeasurementRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
+@Service
 public class QuantityServiceImpl implements QuantityService {
 
-    private final IQuantityMeasurementRepository repository;
+    private QuantityMeasurementRepository repository;
 
-    public QuantityServiceImpl(IQuantityMeasurementRepository repository) {
-        this.repository = repository;
+    @Autowired
+    public QuantityServiceImpl(QuantityMeasurementRepository quantityMeasurementRepository) {
+        this.repository = quantityMeasurementRepository;
     }
-
     /* =========================================================
        ADDITION
        ========================================================= */

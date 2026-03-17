@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuantityRequestDto {
+public class TwoQuantityRequestDto {
 
-    private double value;
-    private String unit;
+    private QuantityRequestDto q1;
+    private QuantityRequestDto q2;
+
 }
