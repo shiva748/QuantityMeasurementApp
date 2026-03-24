@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
         if(userRepository.existsByEmail(registerDto.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
         }
-        User user = User.builder().email(registerDto.getEmail()).firstName(registerDto.getFirstName()).lastName(registerDto.getLastName()).password(bCryptPasswordEncoder.encode(registerDto.getPassword())).build();
+        User user = User.builder().email(registerDto.getEmail()).firstName(registerDto.getFirstName()).lastName(registerDto.getLastName()).password(bCryptPasswordEncoder.encode(registerDto.getPassword())).provider("LOCAL").build();
         return userRepository.save(user);
     }
 

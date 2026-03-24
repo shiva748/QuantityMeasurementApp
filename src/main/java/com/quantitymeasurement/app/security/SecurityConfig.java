@@ -1,7 +1,7 @@
 package com.quantitymeasurement.app.security;
 
 import com.quantitymeasurement.app.security.jwt.JwtFilter;
-import jakarta.servlet.http.HttpServletResponse;
+import com.quantitymeasurement.app.security.oauth.OAuth2SuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,29 +25,21 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService, JwtFilter jwtFilter, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public SecurityConfig(OAuth2SuccessHandler oAuth2SuccessHandler,UserDetailsService userDetailsService, JwtFilter jwtFilter, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userDetailsService = userDetailsService;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
         this.jwtFilter = jwtFilter;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).sessionManagement(Session -> Session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling(ex -> ex
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
-                    response.setContentType("application/json");
-                    response.getWriter().write("""
-                {
-                  "error": "Unauthenticated",
-                  "message": "Please login first"
-                }
-            """);
-                })
-        ).authorizeHttpRequests(auth -> auth.requestMatchers("/login","/register"
-        ).permitAll().anyRequest().authenticated()).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).sessionManagement(Session -> Session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/login","/register", "/oauth2/**", "/"
+        ).permitAll().anyRequest().authenticated()).oauth2Login(oauth -> oauth
+                .successHandler(oAuth2SuccessHandler)).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
