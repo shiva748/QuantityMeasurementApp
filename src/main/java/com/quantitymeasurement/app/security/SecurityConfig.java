@@ -1,6 +1,7 @@
 package com.quantitymeasurement.app.security;
 
 import com.quantitymeasurement.app.security.jwt.JwtFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +35,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).sessionManagement(Session -> Session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/login","/register"
+        http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).sessionManagement(Session -> Session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).exceptionHandling(ex -> ex
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+                    response.setContentType("application/json");
+                    response.getWriter().write("""
+                {
+                  "error": "Unauthenticated",
+                  "message": "Please login first"
+                }
+            """);
+                })
+        ).authorizeHttpRequests(auth -> auth.requestMatchers("/login","/register"
         ).permitAll().anyRequest().authenticated()).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
