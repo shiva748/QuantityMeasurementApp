@@ -26,13 +26,13 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterDto registerDto) {
         User user = userService.register(registerDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
         User user = userService.login(loginDto);
         String Token = jwtService.generateToken(user);

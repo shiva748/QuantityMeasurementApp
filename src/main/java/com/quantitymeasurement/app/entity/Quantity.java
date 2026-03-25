@@ -66,21 +66,37 @@ public final class Quantity<U extends IMeasurable> {
         return out;
     }
 
-    public Quantity<U> add(Quantity<U> that){ return operate(that,ArithmeticOperation.ADD); }
+    public Quantity<U> add(Quantity<U> that){
+        if(that.getUnit().getClass()!=this.unit.getClass()){
+            throw new IllegalArgumentException("Operand's unit must be of same domain.");
+        }
+        return operate(that,ArithmeticOperation.ADD);
+    }
     public Quantity<U> add(Quantity<U> that, U targetUnit) {
 
         if (targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
+        if(targetUnit.getClass()!=this.unit.getClass()){
+            throw new IllegalArgumentException("Target unit must be of same domain.");
+        }
 
         Quantity<U> result = this.add(that);
 
         return result.convertTo(targetUnit);
     }
-    public Quantity<U> subtract(Quantity<U> that){ return operate(that,ArithmeticOperation.SUBTRACT); }
+    public Quantity<U> subtract(Quantity<U> that){
+        if(that.getUnit().getClass()!=this.unit.getClass()){
+            throw new IllegalArgumentException("Operand's unit must be of same domain.");
+        }
+        return operate(that,ArithmeticOperation.SUBTRACT);
+    }
     public Quantity<U> subtract(Quantity<U> that, U targetUnit) {
 
         if (targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
+        if(targetUnit.getClass()!=this.unit.getClass()){
+            throw new IllegalArgumentException("Target unit must be of same domain.");
+        }
 
         Quantity<U> result = this.subtract(that);
 
@@ -89,13 +105,21 @@ public final class Quantity<U extends IMeasurable> {
 
     public double divide(Quantity<U> that){
         if (that == null) throw new IllegalArgumentException("Quantity cannot be null");
+        if(that.getUnit().getClass()!=this.unit.getClass()){
+            throw new IllegalArgumentException("Operand's unit must be of same domain.");
+        }
         this.unit.validateOperationSupport("DIVIDE");
         that.unit.validateOperationSupport("DIVIDE");
         return round(ArithmeticOperation.DIVIDE.compute(this.toBase(),that.toBase()));
     }
 
     public Quantity<U> convertTo(U targetUnit){
-        if(targetUnit==null) throw new IllegalArgumentException("Target unit cannot be null");
+        if(targetUnit==null) {
+            throw new IllegalArgumentException("Target unit cannot be null");
+        }
+        if(targetUnit.getClass()!=this.unit.getClass()){
+            throw new IllegalArgumentException("Target unit must be of same domain.");
+        }
 
         if (this.unit instanceof TemperatureUnit && targetUnit instanceof TemperatureUnit) {
             TemperatureUnit src = (TemperatureUnit) this.unit;

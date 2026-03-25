@@ -2,6 +2,7 @@ package com.quantitymeasurement.app.security;
 
 import com.quantitymeasurement.app.security.jwt.JwtFilter;
 import com.quantitymeasurement.app.security.oauth.OAuth2SuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,11 +38,47 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).sessionManagement(Session -> Session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/login","/register", "/oauth2/**", "/"
-        ).permitAll().anyRequest().authenticated()).oauth2Login(oauth -> oauth
-                .successHandler(oAuth2SuccessHandler)).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(auth -> auth
+
+                        // Open routes
+                        .requestMatchers("/public/**").permitAll()
+                        .requestMatchers("/auth/**", "/oauth2/**", "/login/**").permitAll()
+
+                        // Everything else requires auth
+                        .anyRequest().authenticated()
+                )
+
+                // Return 401 instead of redirect
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                        })
+                )
+
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuth2SuccessHandler)
+                )
+
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable()).sessionManagement(Session -> Session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**", "/oauth2/**", "/public/**"
+//        ).permitAll().anyRequest().authenticated()).oauth2Login(oauth -> oauth
+//                .successHandler(oAuth2SuccessHandler)).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//    }
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {

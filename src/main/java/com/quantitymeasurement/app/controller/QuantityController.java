@@ -7,10 +7,11 @@ import com.quantitymeasurement.app.entity.IMeasurable;
 import com.quantitymeasurement.app.entity.Quantity;
 import com.quantitymeasurement.app.entity.units.*;
 import com.quantitymeasurement.app.service.QuantityService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/quantity")
+@RequestMapping("/quantities")
 public class QuantityController {
 
     private final QuantityService quantityService;
@@ -31,6 +32,11 @@ public class QuantityController {
         try { return TemperatureUnit.valueOf(unit); } catch (Exception ignored) {}
 
         throw new IllegalArgumentException("Unknown unit: " + unit);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> welcome(){
+        return ResponseEntity.status(200).body("Welcome to the quantity measurement you are authorized");
     }
 
     /* =========================================================
