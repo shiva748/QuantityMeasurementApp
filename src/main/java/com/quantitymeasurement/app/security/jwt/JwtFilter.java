@@ -31,10 +31,10 @@ public class JwtFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        if (path.startsWith("/api/auth")|| path.startsWith("/api/oauth2") || path.startsWith("/api/public")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        if (path.startsWith("/api/auth")|| path.startsWith("/api/oauth2") || path.startsWith("/api/public")) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
         String token = extractJwtFromCookies(request);
 
         if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {

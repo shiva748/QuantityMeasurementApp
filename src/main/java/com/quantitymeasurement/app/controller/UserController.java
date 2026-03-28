@@ -1,5 +1,6 @@
 package com.quantitymeasurement.app.controller;
 
+import com.quantitymeasurement.app.dto.ApiResponse;
 import com.quantitymeasurement.app.dto.LoginDto;
 import com.quantitymeasurement.app.dto.RegisterDto;
 import com.quantitymeasurement.app.entity.User;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,15 +30,41 @@ public class UserController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterDto registerDto) {
-        User user = userService.register(registerDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    public ResponseEntity<ApiResponse<?>> registerUser(@RequestBody RegisterDto registerDto) {
+        userService.register(registerDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(true, "User registered successfully!"));
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<ApiResponse<User>> loginUser(@RequestBody LoginDto loginDto) {
         User user = userService.login(loginDto);
         String Token = jwtService.generateToken(user);
-        return ResponseEntity.ok() .header( "Set-Cookie", String.format( "jwt=%s; Path=/; Max-Age=%d; HttpOnly; SameSite=None", Token, tokenExpiry ) ) .body("login was successful.");
+        return ResponseEntity.ok()
+                .header(
+                        "Set-Cookie",
+                        String.format(
+                                "jwt=%s; Path=/; Max-Age=%d; HttpOnly; SameSite=Lax",
+                                Token,
+                                tokenExpiry
+                        )
+                )
+                .body(new ApiResponse<>(true, "Login successfully!", user));
+    }
+
+    @GetMapping("/auth/session")
+    public ResponseEntity<ApiResponse<User>> getSession(Authentication authentication) {
+        if(authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse<>(false, "No session found!"));
+        }
+        Long id = (Long) authentication.getPrincipal();
+        User user = userService.profile(id);
+        return ResponseEntity.ok().body(new  ApiResponse<>(true, "Session Found!", user));
+    }
+
+    @GetMapping("/auth/session/logout")
+    public ResponseEntity<ApiResponse<?>> logoutSession() {
+        return ResponseEntity.ok()
+                .header("Set-Cookie", "jwt=; Max-Age=0; Path=/; HttpOnly" )
+                .body(new ApiResponse<>(true, "Logged out successfully."));
     }
 }
