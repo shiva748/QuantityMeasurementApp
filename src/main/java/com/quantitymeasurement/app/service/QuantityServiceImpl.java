@@ -210,7 +210,7 @@ public class QuantityServiceImpl implements QuantityService {
     }
 
     @Override
-    public Void deleteAllMeasurements(Long userId) {
+    public int deleteAllMeasurements(Long userId) {
         return repository.deleteByUserId(userId);
     }
 

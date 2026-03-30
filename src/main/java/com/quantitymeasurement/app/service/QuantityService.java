@@ -24,5 +24,5 @@ public interface QuantityService {
 
     List<QuantityMeasurementEntity> getAllMeasurements(Long userId);
 
-    Void deleteAllMeasurements(Long userId);
+    int deleteAllMeasurements(Long userId);
 }

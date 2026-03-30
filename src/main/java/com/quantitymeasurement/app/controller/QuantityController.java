@@ -145,6 +145,7 @@ public class QuantityController {
 
     @DeleteMapping("/history")
     public ResponseEntity<ApiResponse<List<?>>> deleteHistory(Authentication authentication){
-        return ResponseEntity.status(200).body(new ApiResponse<>(true, "History deleted successfully."));
+        int recordsDeleted = quantityService.deleteAllMeasurements((Long) authentication.getPrincipal());
+        return ResponseEntity.status(200).body(new ApiResponse<>(true, recordsDeleted+ " record's deleted successfully."));
     }
 }
