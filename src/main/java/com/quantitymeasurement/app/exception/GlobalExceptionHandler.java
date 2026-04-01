@@ -1,5 +1,6 @@
 package com.quantitymeasurement.app.exception;
 
+import com.quantitymeasurement.app.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,17 +11,17 @@ import org.springframework.web.server.ResponseStatusException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex){
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ApiResponse<?>> handleIllegalArgumentException(IllegalArgumentException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(false, ex.getMessage()));
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> handleResponseStatusException(ResponseStatusException e) {
-        return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        return ResponseEntity.status(e.getStatusCode()).body(new ApiResponse<>(false, e.getReason()));
     }
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentialsException(BadCredentialsException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(false, e.getMessage()));
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception ex) {
@@ -30,10 +31,10 @@ public class GlobalExceptionHandler {
         if (cause instanceof ResponseStatusException rse) {
             return ResponseEntity
                     .status(rse.getStatusCode())
-                    .body(rse.getReason());
+                    .body(new ApiResponse<>(false, rse.getReason()));
         }
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Something went wrong");
+                .body(new ApiResponse<>(false, "Something went wrong"));
     }
 }

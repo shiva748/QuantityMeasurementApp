@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/quantities")
+@RequestMapping("/api/quantities")
 public class QuantityController {
 
     private final QuantityService quantityService;
@@ -59,7 +59,7 @@ public class QuantityController {
         Quantity<IMeasurable> right =
                 new Quantity<>(q2.getValue(), resolveUnit(q2.getUnit()));
 
-        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.compare((Long) authentication.getPrincipal(),left, right)));
+        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.compare(authentication != null?(Long) authentication.getPrincipal():-1,left, right)));
     }
 
     /* =========================================================
@@ -68,13 +68,13 @@ public class QuantityController {
 
     @PostMapping("/convert")
     public ResponseEntity<ApiResponse<QuantityMeasurementEntity>> convert(Authentication authentication,
-            @RequestBody QuantityRequestDto req,
-            @RequestParam String targetUnit) {
+                                                                          @RequestBody QuantityRequestDto req,
+                                                                          @RequestParam String targetUnit) {
 
         Quantity<IMeasurable> quantity =
                 new Quantity<>(req.getValue(), resolveUnit(req.getUnit()));
 
-        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.convert((Long) authentication.getPrincipal(),quantity, resolveUnit(targetUnit))));
+        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.convert(authentication != null?(Long) authentication.getPrincipal():-1,quantity, resolveUnit(targetUnit))));
     }
 
     /* =========================================================
@@ -83,8 +83,8 @@ public class QuantityController {
 
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<QuantityMeasurementEntity>> add(Authentication authentication,
-            @RequestBody TwoQuantityRequestDto request,
-            @RequestParam(required = false) String targetUnit) {
+                                                                      @RequestBody TwoQuantityRequestDto request,
+                                                                      @RequestParam(required = false) String targetUnit) {
 
         QuantityRequestDto q1 = request.getQ1();
         QuantityRequestDto q2 = request.getQ2();
@@ -95,7 +95,7 @@ public class QuantityController {
         Quantity<IMeasurable> right =
                 new Quantity<>(q2.getValue(), resolveUnit(q2.getUnit()));
 
-        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.add((Long) authentication.getPrincipal(),left, right, resolveUnit(targetUnit))));
+        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.add(authentication != null?(Long) authentication.getPrincipal():-1,left, right, resolveUnit(targetUnit))));
     }
 
     /* =========================================================
@@ -104,8 +104,8 @@ public class QuantityController {
 
     @PostMapping("/subtract")
     public ResponseEntity<ApiResponse<QuantityMeasurementEntity>> subtract(Authentication authentication,
-            @RequestBody TwoQuantityRequestDto request,
-            @RequestParam(required = false) String targetUnit) {
+                                                                           @RequestBody TwoQuantityRequestDto request,
+                                                                           @RequestParam(required = false) String targetUnit) {
 
         QuantityRequestDto q1 = request.getQ1();
         QuantityRequestDto q2 = request.getQ2();
@@ -116,7 +116,7 @@ public class QuantityController {
         Quantity<IMeasurable> right =
                 new Quantity<>(q2.getValue(), resolveUnit(q2.getUnit()));
 
-        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.subtract((Long) authentication.getPrincipal(),left, right, resolveUnit(targetUnit))));
+        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.subtract(authentication != null?(Long) authentication.getPrincipal():-1,left, right, resolveUnit(targetUnit))));
     }
 
     /* =========================================================
@@ -135,7 +135,7 @@ public class QuantityController {
         Quantity<IMeasurable> right =
                 new Quantity<>(q2.getValue(), resolveUnit(q2.getUnit()));
 
-        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.divide((Long) authentication.getPrincipal(), left, right)));
+        return ResponseEntity.status(200).body(new ApiResponse<>(true, "Operation Successful", quantityService.divide(authentication != null?(Long) authentication.getPrincipal():-1, left, right)));
     }
 
     @GetMapping("/history")
